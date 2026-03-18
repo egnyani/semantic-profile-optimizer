@@ -177,12 +177,22 @@ def compute_keyword_coverage(
 
     results: list[dict[str, Any]] = []
     for kw in keywords:
-        # Try exact substring first
-        matched = kw.lower() in lower
-        # Also try each word of a multi-word keyword (partial match counts)
-        if not matched and " " in kw:
-            words = [w for w in kw.lower().split() if len(w) > 3]
-            matched = all(w in lower for w in words) if words else False
+        kl = kw.lower().strip()
+
+        # 1. Exact substring match (case-insensitive) — primary check
+        matched = kl in lower
+
+        # 2. Normalised match: strip a trailing 's' from the last word
+        #    handles "deep learning models" ↔ "deep learning model" only
+        if not matched:
+            words = kl.split()
+            if words:
+                # try dropping/adding a trailing 's' on the last token
+                last = words[-1]
+                alt_last = last[:-1] if last.endswith("s") and len(last) > 3 else last + "s"
+                alt_phrase = " ".join(words[:-1] + [alt_last])
+                matched = alt_phrase in lower
+
         results.append({"keyword": kw, "matched": matched})
 
     matched_count = sum(1 for r in results if r["matched"])

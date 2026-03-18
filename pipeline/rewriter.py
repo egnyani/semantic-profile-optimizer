@@ -258,10 +258,19 @@ def keyword_driven_rewrite(
         # Patch the resume in-place
         updated["experience"][b["exp_idx"]]["bullets"][b["bullet_idx"]] = rewritten
 
+        # Report only keywords that actually landed in the rewritten text,
+        # not the planned list — GPT sometimes drops terms even after the
+        # verification pass.
+        rewritten_lower = rewritten.lower()
+        actually_injected = [
+            kw for kw in keywords_to_inject
+            if kw.lower() in rewritten_lower
+        ]
+
         rewrites.append({
             "original": original,
             "rewritten": rewritten,
-            "injected_keywords": keywords_to_inject,
+            "injected_keywords": actually_injected,
         })
 
     return updated, rewrites, assignment
