@@ -385,29 +385,39 @@
     .stat-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
     .stat-card {
-      padding: 16px;
+      padding: 14px 10px;
       text-align: center;
+      min-width: 0;
+      overflow: hidden;
     }
     .stat-label {
       font-size: 10px;
       font-weight: 700;
-      letter-spacing: .6px;
+      letter-spacing: .5px;
       text-transform: uppercase;
       color: var(--text-tertiary);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      white-space: nowrap;
     }
     .stat-value {
-      font-size: 28px;
+      font-size: clamp(20px, 3vw, 28px);
       font-weight: 800;
       letter-spacing: -1px;
       line-height: 1;
       margin-bottom: 4px;
+      white-space: nowrap;
     }
-    .stat-sub { font-size: 11px; color: var(--text-secondary); }
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     /* ── coverage bar ── */
     .cov-bar-wrap {
@@ -488,23 +498,40 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
+      margin-bottom: 0;
     }
     .section-title {
       font-size: 13px;
       font-weight: 700;
       color: var(--text-primary);
+      white-space: nowrap;
     }
     .section-count {
       font-size: 12px;
       font-weight: 500;
       color: var(--text-secondary);
     }
+    /* Keyword header: title + pills on row 1, stat chips on row 2 */
+    .kw-header { margin-bottom: 12px; }
+    .kw-stat-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .kw-stat-chip {
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .kw-stat-chip .num { font-weight: 700; }
 
     /* ── filter pills ── */
-    .filter-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+    .filter-pills { display: flex; gap: 4px; flex-wrap: wrap; flex-shrink: 0; }
     .filter-pill {
       padding: 4px 11px;
       border-radius: 99px;
@@ -579,6 +606,8 @@
     .change-card:hover { box-shadow: var(--shadow-sm); }
     .change-header {
       width: 100%;
+      min-width: 0;
+      overflow: hidden;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -596,7 +625,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 140px;
+      max-width: clamp(120px, 30%, 220px);
+      flex-shrink: 0;
     }
     .change-preview {
       flex: 1;
@@ -886,18 +916,12 @@ function ResultsPanel({ result, onDownload }) {
       </button>
 
       {/* Keyword breakdown */}
-      <div className="card" style={{ padding: "16px 18px", marginBottom: 16 }}>
-        <div className="section-hdr">
-          <div>
-            <span className="section-title">Keywords</span>
-            <span className="section-count" style={{ marginLeft: 8 }}>
-              {keywords_total} total
-              &nbsp;·&nbsp;<span style={{ color: "var(--text-secondary)" }}>{present} already present</span>
-              &nbsp;·&nbsp;<span style={{ color: "var(--accent)" }}>{gained} gained</span>
-              &nbsp;·&nbsp;<span style={{ color: "var(--green)" }}>{keywords_after} matched</span>
-              &nbsp;·&nbsp;<span style={{ color: "var(--red)" }}>{missing} missing</span>
-            </span>
-          </div>
+      <div className="card" style={{ padding: "14px 16px", marginBottom: 14 }}>
+        {/* Row 1: title + filter pills */}
+        <div className="section-hdr" style={{ marginBottom: 0 }}>
+          <span className="section-title">
+            Keywords&nbsp;<span style={{ fontWeight: 500, color: "var(--text-tertiary)", fontSize: 12 }}>({keywords_total})</span>
+          </span>
           <div className="filter-pills">
             {[
               ["all",     "All"],
@@ -913,7 +937,25 @@ function ResultsPanel({ result, onDownload }) {
             ))}
           </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap" }}>
+        {/* Row 2: stat chips */}
+        <div className="kw-stat-row">
+          <span className="kw-stat-chip">
+            <span className="num" style={{ color: "var(--green)" }}>{keywords_after}</span> matched
+          </span>
+          <span className="kw-stat-chip">
+            <span className="num" style={{ color: "var(--accent)" }}>+{gained}</span> gained
+          </span>
+          <span className="kw-stat-chip">
+            <span className="num" style={{ color: "var(--text-secondary)" }}>{present}</span> already present
+          </span>
+          {missing > 0 && (
+            <span className="kw-stat-chip">
+              <span className="num" style={{ color: "var(--red)" }}>{missing}</span> missing
+            </span>
+          )}
+        </div>
+        {/* Keyword badges */}
+        <div style={{ display: "flex", flexWrap: "wrap", marginTop: 10 }}>
           {filtered.map(k => (
             <KeywordBadge key={k.keyword} keyword={k.keyword} before={k.before} after={k.after} />
           ))}
@@ -928,9 +970,9 @@ function ResultsPanel({ result, onDownload }) {
       {/* Rewritten bullets */}
       {changes?.length > 0 && (
         <div>
-          <div className="section-hdr">
+          <div className="section-hdr" style={{ marginBottom: 10 }}>
             <span className="section-title">Rewritten Bullets</span>
-            <span className="section-count">{changes.length} changes</span>
+            <span className="section-count">{changes.length} {changes.length === 1 ? "change" : "changes"}</span>
           </div>
           {changes.map((c, i) => (
             <ChangeCard key={i} change={c} index={i} defaultOpen={i < 2} />
@@ -1123,7 +1165,7 @@ function App() {
           </div>
 
           {/* ── Right: results panel ── */}
-          <div>
+          <div style={{ minWidth: 0, overflow: "hidden" }}>
             {!result && !loading && (
               <div className="card empty-state">
                 <div className="empty-icon"><IconTarget /></div>
