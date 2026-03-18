@@ -6,3 +6,4 @@ argparse
 fastapi
 uvicorn[standard]
 lxml
+playwright
