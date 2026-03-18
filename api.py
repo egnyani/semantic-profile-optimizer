@@ -281,12 +281,20 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
     # 10. Build per-keyword before/after diff
     before_map = {r["keyword"]: r["matched"] for r in before_cov["keywords"]}
     after_map  = {r["keyword"]: r["matched"] for r in after_cov["keywords"]}
+
+    # Map each keyword → the change card index where it was injected (for UI scroll-to)
+    kw_to_change_idx: dict[str, int] = {}
+    for i, change in enumerate(enriched):
+        for kw in change.get("injected_keywords", []):
+            kw_to_change_idx[kw] = i
+
     keyword_diff = [
         {
             "keyword": kw,
-            "before": before_map.get(kw, False),
-            "after":  after_map.get(kw, False),
-            "gained": (not before_map.get(kw, False)) and after_map.get(kw, False),
+            "before":     before_map.get(kw, False),
+            "after":      after_map.get(kw, False),
+            "gained":     (not before_map.get(kw, False)) and after_map.get(kw, False),
+            "change_idx": kw_to_change_idx.get(kw, None),  # None if already present / still missing
         }
         for kw in keywords
     ]

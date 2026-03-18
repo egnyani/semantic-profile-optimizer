@@ -595,6 +595,11 @@
     }
 
     /* ── change accordion ── */
+    @keyframes cardHighlight {
+      0%   { box-shadow: 0 0 0 3px rgba(79,70,229,.55), var(--shadow-md); background: #eef2ff; }
+      60%  { box-shadow: 0 0 0 3px rgba(79,70,229,.25), var(--shadow-md); background: #f5f3ff; }
+      100% { box-shadow: var(--shadow-sm); background: var(--surface); }
+    }
     .change-card {
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
@@ -602,8 +607,10 @@
       margin-bottom: 8px;
       background: var(--surface);
       transition: box-shadow .15s;
+      scroll-margin-top: 80px;   /* offset for sticky nav */
     }
     .change-card:hover { box-shadow: var(--shadow-sm); }
+    .change-card.highlighted { animation: cardHighlight 1.6s ease forwards; }
     .change-header {
       width: 100%;
       min-width: 0;
@@ -777,19 +784,33 @@ const IconX = () => (
 
 // ─── keyword badge ────────────────────────────────────────────────────────────
 
-function KeywordBadge({ keyword, before, after }) {
+function KeywordBadge({ keyword, before, after, changeIdx, onJumpTo }) {
+  const canJump = changeIdx != null;
+  const cursorStyle = canJump ? "pointer" : "default";
+  const titleSuffix = canJump ? " — click to jump to bullet" : "";
+
   if (after && !before) return (
-    <span className="kw-gained" title="Newly injected into resume">
+    <span
+      className="kw-gained"
+      title={`Newly injected into resume${titleSuffix}`}
+      style={{ cursor: cursorStyle }}
+      onClick={canJump ? () => onJumpTo(changeIdx) : undefined}
+    >
       <IconPlus />{keyword}
     </span>
   );
   if (after) return (
-    <span className="kw-present" title="Already present in resume">
+    <span
+      className="kw-present"
+      title={`Already present in resume${titleSuffix}`}
+      style={{ cursor: cursorStyle }}
+      onClick={canJump ? () => onJumpTo(changeIdx) : undefined}
+    >
       <IconCheck />{keyword}
     </span>
   );
   return (
-    <span className="kw-missing" title="Not matched — below similarity threshold">
+    <span className="kw-missing" title="Not matched — below similarity threshold" style={{ cursor: "default" }}>
       <IconX />{keyword}
     </span>
   );
@@ -797,12 +818,20 @@ function KeywordBadge({ keyword, before, after }) {
 
 // ─── change card ─────────────────────────────────────────────────────────────
 
-function ChangeCard({ change, index, defaultOpen }) {
+function ChangeCard({ change, index, defaultOpen, highlighted }) {
   const [open, setOpen] = useState(defaultOpen);
   const kwCount = change.injected_keywords?.length || 0;
 
+  // Auto-open this card when a keyword badge jumps to it
+  React.useEffect(() => {
+    if (highlighted) setOpen(true);
+  }, [highlighted]);
+
   return (
-    <div className="change-card">
+    <div
+      id={`change-card-${index}`}
+      className={`change-card${highlighted ? " highlighted" : ""}`}
+    >
       <button className="change-header" onClick={() => setOpen(o => !o)}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 3 }}>
@@ -849,7 +878,8 @@ function ChangeCard({ change, index, defaultOpen }) {
 // ─── results panel ───────────────────────────────────────────────────────────
 
 function ResultsPanel({ result, onDownload }) {
-  const [kwFilter, setKwFilter] = useState("all");
+  const [kwFilter, setKwFilter]     = useState("all");
+  const [highlighted, setHighlighted] = useState(null);   // change card index
   const {
     keywords_total, keywords_before, keywords_after,
     coverage_before, coverage_after, coverage_gain,
@@ -859,6 +889,17 @@ function ResultsPanel({ result, onDownload }) {
   const gained = keywords_after - keywords_before;
   const present = keywords_before;
   const missing = keywords_total - keywords_after;
+
+  // Scroll to a change card and flash its highlight animation
+  const jumpToChange = (idx) => {
+    const el = document.getElementById(`change-card-${idx}`);
+    if (!el) return;
+    // Open the card first so content is visible
+    setHighlighted(idx);
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // Remove highlighted class after animation ends (1.6s) so it can re-trigger
+    setTimeout(() => setHighlighted(null), 1800);
+  };
 
   const afterColor =
     coverage_after >= 80 ? "var(--green)" :
@@ -959,7 +1000,7 @@ function ResultsPanel({ result, onDownload }) {
         {/* Keyword badges */}
         <div style={{ display: "flex", flexWrap: "wrap", marginTop: 10 }}>
           {filtered.map(k => (
-            <KeywordBadge key={k.keyword} keyword={k.keyword} before={k.before} after={k.after} />
+            <KeywordBadge key={k.keyword} keyword={k.keyword} before={k.before} after={k.after} changeIdx={k.change_idx ?? null} onJumpTo={jumpToChange} />
           ))}
           {filtered.length === 0 && (
             <div style={{ fontSize: 12, color: "var(--text-tertiary)", padding: "6px 0" }}>
@@ -977,7 +1018,7 @@ function ResultsPanel({ result, onDownload }) {
             <span className="section-count">{changes.length} {changes.length === 1 ? "change" : "changes"}</span>
           </div>
           {changes.map((c, i) => (
-            <ChangeCard key={i} change={c} index={i} defaultOpen={i < 2} />
+            <ChangeCard key={i} change={c} index={i} defaultOpen={i < 2 || highlighted === i} highlighted={highlighted === i} />
           ))}
         </div>
       )}
