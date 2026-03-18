@@ -625,8 +625,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: clamp(120px, 30%, 220px);
-      flex-shrink: 0;
+      min-width: 0;
+      flex: 0 1 auto;
     }
     .change-preview {
       flex: 1;
@@ -805,16 +805,18 @@ function ChangeCard({ change, index, defaultOpen }) {
     <div className="change-card">
       <button className="change-header" onClick={() => setOpen(o => !o)}>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="change-section-tag">
-            {change.section || `Bullet ${index + 1}`}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 3 }}>
+            <div className="change-section-tag">
+              {change.section || `Bullet ${index + 1}`}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+              {kwCount > 0 && (
+                <span className="change-kw-count">+{kwCount} keywords</span>
+              )}
+              <span className={`change-chevron${open ? " open" : ""}`}>▼</span>
+            </div>
           </div>
           <div className="change-preview">{change.original}</div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          {kwCount > 0 && (
-            <span className="change-kw-count">+{kwCount} keywords</span>
-          )}
-          <span className={`change-chevron${open ? " open" : ""}`}>▼</span>
         </div>
       </button>
 
