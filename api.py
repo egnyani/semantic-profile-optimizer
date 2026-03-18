@@ -43,9 +43,14 @@ from pipeline.xml_builder import xml_patch_docx
 
 # ── constants ──────────────────────────────────────────────────────────────
 
+# Vercel's filesystem is read-only everywhere except /tmp.
+# When running on Vercel (VERCEL env var is set to "1"), write generated
+# DOCX files to /tmp/outputs so the download endpoint can serve them.
+# Locally, the existing "outputs/" directory is used as before.
+_ON_VERCEL = bool(os.environ.get("VERCEL"))
 ORIGINAL_RESUME = Path("data/Gnyani_Resume_Final__2_.docx")
-OUTPUTS_DIR = Path("outputs")
-OUTPUTS_DIR.mkdir(exist_ok=True)
+OUTPUTS_DIR = Path("/tmp/outputs" if _ON_VERCEL else "outputs")
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # ── app ────────────────────────────────────────────────────────────────────

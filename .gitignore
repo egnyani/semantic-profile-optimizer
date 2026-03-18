@@ -1,1 +1,12 @@
 .env
+
+# Generated pipeline outputs – not needed in Vercel deployment bundle
+outputs/*.docx
+outputs/*.json
+outputs/*.md
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.pyc
+.DS_Store
