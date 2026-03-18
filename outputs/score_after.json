@@ -1,0 +1,228 @@
+{
+  "overall_score": 0.6058651716941579,
+  "requirement_coverage": [
+    {
+      "requirement": "5+ years building production-grade data pipelines and warehouse models",
+      "best_match_bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "score": 0.628391089490617,
+      "keyword_score": 0.6,
+      "semantic_score": 0.6709777237265424,
+      "keywords_checked": [
+        "data pipelines",
+        "warehouse models",
+        "production-grade",
+        "pipelines",
+        "models"
+      ]
+    },
+    {
+      "requirement": "Strong proficiency in Python and SQL for data processing",
+      "best_match_bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "score": 0.8266285455614824,
+      "keyword_score": 1.0,
+      "semantic_score": 0.5665713639037059,
+      "keywords_checked": [
+        "python",
+        "sql",
+        "data",
+        "processing"
+      ]
+    },
+    {
+      "requirement": "Hands-on experience with Airflow or similar orchestration tools",
+      "best_match_bullet": "Developed production-grade RAG pipelines using Python, SQL, and Airflow, achieving 90%+ precision in contract analytics, enhancing data reliability and pipeline performance on cloud platforms.",
+      "score": 0.482206326455095,
+      "keyword_score": 0.5,
+      "semantic_score": 0.4555158161377375,
+      "keywords_checked": [
+        "hands-on",
+        "airflow",
+        "orchestration",
+        "tools"
+      ]
+    },
+    {
+      "requirement": "Experience with cloud data platforms like AWS, Snowflake, or Redshift",
+      "best_match_bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "score": 0.846902770444308,
+      "keyword_score": 1.0,
+      "semantic_score": 0.6172569261107699,
+      "keywords_checked": [
+        "cloud",
+        "data",
+        "platforms",
+        "aws",
+        "snowflake",
+        "redshift"
+      ]
+    },
+    {
+      "requirement": "Familiarity with distributed processing technologies such as Spark or Flink",
+      "best_match_bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "score": 0.6621897631393449,
+      "keyword_score": 0.8,
+      "semantic_score": 0.4554744078483621,
+      "keywords_checked": [
+        "distributed processing",
+        "processing",
+        "technologies",
+        "spark",
+        "flink"
+      ]
+    },
+    {
+      "requirement": "Ability to improve data reliability and pipeline performance",
+      "best_match_bullet": "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance.",
+      "score": 0.8491541314836759,
+      "keyword_score": 1.0,
+      "semantic_score": 0.6228853287091898,
+      "keywords_checked": [
+        "pipeline performance",
+        "improve",
+        "data",
+        "reliability",
+        "performance"
+      ]
+    },
+    {
+      "requirement": "Experience supporting product analytics or SaaS business intelligence",
+      "best_match_bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "score": 0.6953994471189286,
+      "keyword_score": 0.8,
+      "semantic_score": 0.5384986177973216,
+      "keywords_checked": [
+        "business intelligence",
+        "product analytics",
+        "analytics",
+        "saas",
+        "intelligence"
+      ]
+    },
+    {
+      "requirement": "Familiarity with dbt, Terraform, or infrastructure-as-code workflows",
+      "best_match_bullet": "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance.",
+      "score": 0.32681135521150706,
+      "keyword_score": 0.25,
+      "semantic_score": 0.4420283880287677,
+      "keywords_checked": [
+        "dbt",
+        "terraform",
+        "infrastructure-as-code",
+        "workflows"
+      ]
+    },
+    {
+      "requirement": "Experience designing data quality frameworks and validation checks",
+      "best_match_bullet": "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance.",
+      "score": 0.27604446354444956,
+      "keyword_score": 0.2,
+      "semantic_score": 0.39011115886112396,
+      "keywords_checked": [
+        "data quality",
+        "validation checks",
+        "quality",
+        "frameworks",
+        "checks"
+      ]
+    },
+    {
+      "requirement": "Comfortable mentoring junior engineers and driving best practices",
+      "best_match_bullet": "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance.",
+      "score": 0.4649238244921699,
+      "keyword_score": 0.5,
+      "semantic_score": 0.4123095612304247,
+      "keywords_checked": [
+        "best practices",
+        "junior engineers",
+        "engineers",
+        "practices"
+      ]
+    }
+  ],
+  "weak_bullets": [
+    {
+      "section": "Experience - Software Developer",
+      "experience_index": 1,
+      "index": 0,
+      "bullet": "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+      "best_score": 0.6709777237265424
+    },
+    {
+      "section": "Experience - Software Developer",
+      "experience_index": 1,
+      "index": 1,
+      "bullet": "Developed production-grade data pipelines using Python, SQL, and AWS EKS, enhancing scalability and performance for multi-million-record workloads with FastAPI and Docker.",
+      "best_score": 0.5944125834612461
+    },
+    {
+      "section": "Experience - Software Developer",
+      "experience_index": 1,
+      "index": 2,
+      "bullet": "Developed production-grade RAG pipelines using Python, SQL, and Airflow, achieving 90%+ precision in contract analytics, enhancing data reliability and pipeline performance on cloud platforms.",
+      "best_score": 0.5674550138052864
+    },
+    {
+      "section": "Experience - Software Developer",
+      "experience_index": 1,
+      "index": 3,
+      "bullet": "Enhanced system reliability and observability using CloudWatch, reducing incident response times by 40% and achieving 99.99% service uptime for improved data pipeline performance.",
+      "best_score": 0.5898905248116763
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 2,
+      "index": 0,
+      "bullet": "Developed and implemented a full-stack Skills Intelligence Platform using FastAPI, React.js, Azure SQL, and Docker, enhancing data processing efficiency and reducing manual allocation time by 60% for 2,000+ employees.",
+      "best_score": 0.4834517225953836
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 2,
+      "index": 1,
+      "bullet": "Designed a Contract Intelligence Platform using Python, SQL, and Kafka, enhancing data pipeline performance and reducing query latency by 70%, processing 1,000+ real-time document inferences daily.",
+      "best_score": 0.4722967025299556
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 2,
+      "index": 2,
+      "bullet": "Productionized multi-agent RAG architecture using FAISS, LangChain, and OpenAI API, achieving 89% top 3 recall, enhancing data pipeline performance and supporting SaaS business intelligence.",
+      "best_score": 0.39987883309404637
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 2,
+      "index": 3,
+      "bullet": "Developed container-native CI/CD pipelines using GitHub Actions and Jenkins, enhancing deployment reliability and telemetry on Azure Kubernetes Service (AKS) clusters.",
+      "best_score": 0.4102283254595053
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 4,
+      "index": 0,
+      "bullet": "Architected and delivered a cloud-native client portal using Flask/Django, React.js, and MongoDB, automating workflows and reducing operational latency by 70%.",
+      "best_score": 0.4083537478951129
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 4,
+      "index": 1,
+      "bullet": "Engineered high-performance data pipelines using Python and PostgreSQL, achieving sub-100ms response times for executive analytics dashboards, enhancing data reliability and supporting SaaS business intelligence.",
+      "best_score": 0.5488032327589402
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 4,
+      "index": 2,
+      "bullet": "Implemented serverless architecture on AWS Lambda, API Gateway, S3, and RDS, ensuring 99.9% uptime and reducing infrastructure costs by 30% through elastic scaling.",
+      "best_score": 0.4151550078014547
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 4,
+      "index": 3,
+      "bullet": "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance.",
+      "best_score": 0.6228853287091898
+    }
+  ]
+}

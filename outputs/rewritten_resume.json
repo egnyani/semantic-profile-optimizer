@@ -1,0 +1,132 @@
+{
+  "name": "Harsh Dwivedi",
+  "summary": "",
+  "skills": {
+    "Languages": [
+      "Python",
+      "C/C++",
+      "Java",
+      "C#",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "SQL",
+      "PHP",
+      "Typescript",
+      "Ruby",
+      "Go."
+    ],
+    "Developer/Debugging Tools": [
+      "Visual Studio",
+      "VS Code",
+      "IntelliJ",
+      "Eclipse",
+      "Android Studio",
+      "JUnit",
+      "Mockito."
+    ],
+    "Technologies/Frameworks": [
+      "MySQL",
+      "Node.js",
+      "Next.js",
+      "Express.js",
+      "ReactJS",
+      "Jenkins",
+      "GraphQL",
+      "Apache Kafka",
+      "Git",
+      "Oracle",
+      "Postgres."
+    ],
+    "Other Technologies": [
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "NumPy",
+      "Pandas",
+      "Cassandra",
+      "LangChain",
+      "Maven."
+    ]
+  },
+  "experience": [
+    {
+      "role": "RELI Group Inc.",
+      "company": "",
+      "dates": "Syracuse, New York",
+      "bullets": []
+    },
+    {
+      "role": "Software Developer",
+      "company": "",
+      "dates": "October 2025 \u2013 Present",
+      "bullets": [
+        "Developed production-grade data pipelines using Python, SQL, and Airflow, enhancing data reliability and performance for SaaS business intelligence on AWS and Snowflake platforms.",
+        "Developed production-grade data pipelines using Python, SQL, and AWS EKS, enhancing scalability and performance for multi-million-record workloads with FastAPI and Docker.",
+        "Developed production-grade RAG pipelines using Python, SQL, and Airflow, achieving 90%+ precision in contract analytics, enhancing data reliability and pipeline performance on cloud platforms.",
+        "Enhanced system reliability and observability using CloudWatch, reducing incident response times by 40% and achieving 99.99% service uptime for improved data pipeline performance."
+      ]
+    },
+    {
+      "role": "Software Developer Intern",
+      "company": "",
+      "dates": "February 2025 \u2013 September 2025",
+      "bullets": [
+        "Developed and implemented a full-stack Skills Intelligence Platform using FastAPI, React.js, Azure SQL, and Docker, enhancing data processing efficiency and reducing manual allocation time by 60% for 2,000+ employees.",
+        "Designed a Contract Intelligence Platform using Python, SQL, and Kafka, enhancing data pipeline performance and reducing query latency by 70%, processing 1,000+ real-time document inferences daily.",
+        "Productionized multi-agent RAG architecture using FAISS, LangChain, and OpenAI API, achieving 89% top 3 recall, enhancing data pipeline performance and supporting SaaS business intelligence.",
+        "Developed container-native CI/CD pipelines using GitHub Actions and Jenkins, enhancing deployment reliability and telemetry on Azure Kubernetes Service (AKS) clusters."
+      ]
+    },
+    {
+      "role": "Acmesia Consultants LLP",
+      "company": "",
+      "dates": "Mumbai, India",
+      "bullets": []
+    },
+    {
+      "role": "Software Engineer",
+      "company": "",
+      "dates": "May 2022 \u2013 July 2023",
+      "bullets": [
+        "Architected and delivered a cloud-native client portal using Flask/Django, React.js, and MongoDB, automating workflows and reducing operational latency by 70%.",
+        "Engineered high-performance data pipelines using Python and PostgreSQL, achieving sub-100ms response times for executive analytics dashboards, enhancing data reliability and supporting SaaS business intelligence.",
+        "Implemented serverless architecture on AWS Lambda, API Gateway, S3, and RDS, ensuring 99.9% uptime and reducing infrastructure costs by 30% through elastic scaling.",
+        "Accelerated feature delivery by 45% through Agile, TDD, and performance-tuning sprints, enhancing DevOps CI/CD pipelines and driving best practices in data pipeline reliability and performance."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "M.S. in Information Systems, Syracuse University, Syracuse, NY",
+      "institution": "",
+      "dates": "Aug 2023 \u2013 May 2025"
+    },
+    {
+      "degree": "B.E. in Electronics Engineering, Mumbai University, Mumbai, India",
+      "institution": "",
+      "dates": "Aug 2019 \u2013 May 2023"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Predictive System Monitoring with AI December 2025",
+      "bullets": [
+        "Developed an AI-driven monitoring platform to predict infrastructure failures by analyzing logs, metrics, and user behavior, leveraging Kafka, Spark, and AWS Kinesis for real-time data processing.",
+        "Implemented ML models for anomaly detection and time-series forecasting and built Grafana/Prometheus dashboards to deliver"
+      ]
+    },
+    {
+      "name": "actionable reliability insights.",
+      "bullets": []
+    },
+    {
+      "name": "Syracuse Student Marketplace March 2026",
+      "bullets": [
+        "Building a peer-to-peer campus marketplace for Syracuse University students to buy, sell, and exchange items using Next.js, Supabase, and Vercel with real-time listings and university email authentication.",
+        "Designed row-level security policies in PostgreSQL via Supabase RLS to scope listing visibility and messaging to verified university users."
+      ]
+    }
+  ],
+  "certifications": []
+}

@@ -1,0 +1,12 @@
+{
+  "requirements": [
+    "Design, implement, and optimize ELT workflows using Python, SQL, and orchestration frameworks such as Airflow",
+    "Improve data quality, observability, and operational excellence through testing, alerting, documentation, and root-cause analysis",
+    "Contribute to platform architecture decisions involving AWS, Snowflake, data lake storage, and CI/CD practices",
+    "5+ years of experience building production-grade data pipelines and warehouse models",
+    "Strong proficiency in Python and SQL for transformation, automation, and data processing",
+    "Hands-on experience with Airflow or similar orchestration tools in production environments",
+    "Experience working with cloud data platforms such as AWS, Snowflake, Redshift, or Databricks",
+    "Familiarity with distributed processing technologies such as Spark or Flink"
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "name": "GNYANI ENUGANDULA",
+  "summary": "",
+  "skills": {
+    "Languages": [
+      "Python",
+      "C/C++",
+      "Java",
+      "C#",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "SQL",
+      "PHP",
+      "Typescript",
+      "Ruby",
+      "Go."
+    ],
+    "Developer/Debugging Tools": [
+      "Visual Studio",
+      "VS Code",
+      "IntelliJ",
+      "Eclipse",
+      "Android Studio",
+      "JUnit",
+      "Mockito."
+    ],
+    "Technologies/Frameworks": [
+      "MySQL",
+      "Node.js",
+      "Next.js",
+      "Express.js",
+      "ReactJS",
+      "Jenkins",
+      "GraphQL",
+      "Apache Kafka",
+      "Git",
+      "Oracle",
+      "Postgres."
+    ],
+    "Other Technologies": [
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "NumPy",
+      "Pandas",
+      "Cassandra",
+      "LangChain",
+      "Maven."
+    ]
+  },
+  "experience": [
+    {
+      "role": "Software Developer",
+      "company": "RELI Group Inc.",
+      "dates": "October 2025 \u2013 Present",
+      "location": "Syracuse, New York",
+      "bullets": [
+        "Designed and maintained production-grade Airflow DAGs and Python/SQL ELT orchestration workflows to schedule batch pipelines and warehouse model updates, processing millions of records daily with automated data quality alerting and retry logic.",
+        "Contributed to cloud data platform architecture leveraging AWS S3 data lake storage, Snowflake warehousing, and CI/CD pipeline automation to power product analytics and executive dashboards.",
+        "Built and scaled production-grade distributed data processing pipelines using Apache Spark and AWS EKS, managing multi-terabyte workloads across 5+ years of data engineering to ensure horizontally scalable reliability for warehouse analytics.",
+        "Designed data quality frameworks and automated validation checks using dbt tests, enabling root-cause analysis and observability through alerting and documentation."
+      ]
+    },
+    {
+      "role": "Software Developer Intern",
+      "company": "",
+      "dates": "February 2025 \u2013 September 2025",
+      "location": "",
+      "bullets": [
+        "Partnered with technical and non-technical stakeholders\u2014product, finance, and engineering teams\u2014to translate ambiguous requirements into trusted datasets and self-service analytics products.",
+        "Spearheaded design of a Contract Intelligence Platform leveraging Spring Boot, Redis, Kafka, and Hugging Face Transformers, delivering 1,000+ real-time document inferences/day while reducing query latency by 70%.",
+        "Devised and productionized a multi-agent RAG architecture (FAISS, Sentence Transformers, LangChain, OpenAI API) achieving 89% top 3 recall, directly elevating bid-win probability and proposal velocity.",
+        "Established container-native CI/CD pipelines through GitHub Actions and Jenkins, enabling zero-downtime deployments and proactive telemetry on Azure Kubernetes Service (AKS) clusters."
+      ]
+    },
+    {
+      "role": "Software Engineer",
+      "company": "Acmesia Consultants LLP",
+      "dates": "May 2022 \u2013 July 2023",
+      "location": "Mumbai, India",
+      "bullets": [
+        "Implemented infrastructure-as-code workflows using Terraform and CloudFormation, enabling reproducible data platform deployments with CI/CD automation and dbt model versioning.",
+        "Developed high-throughput Node.js microservices backed by PostgreSQL, achieving sub-100ms response times for analytics dashboards consumed by executive leadership.",
+        "Mentored junior engineers in data engineering best practices\u2014pipeline design, SQL optimization, and testing\u2014while driving adoption of data quality frameworks and observability standards.",
+        "Spearheaded DevOps excellence through Agile, TDD, and performance-tuning sprints, hardening CI/CD pipelines and accelerating feature delivery velocity by 45%."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "M.S. in Information Systems, Syracuse University, Syracuse, NY",
+      "institution": "",
+      "dates": "Aug 2023 \u2013 May 2025"
+    },
+    {
+      "degree": "B.E. in Electronics Engineering, Mumbai University, Mumbai, India",
+      "institution": "",
+      "dates": "Aug 2019 \u2013 May 2023"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Predictive System Monitoring with AI",
+      "bullets": [
+        "Developed an AI-driven monitoring platform to predict infrastructure failures by analyzing logs, metrics, and user behavior, leveraging Kafka, Spark, and AWS Kinesis for real-time data processing.",
+        "Implemented ML models for anomaly detection and time-series forecasting and built Grafana/Prometheus dashboards to deliver actionable reliability insights."
+      ]
+    },
+    {
+      "name": "Syracuse Student Marketplace",
+      "bullets": [
+        "Building a peer-to-peer campus marketplace for Syracuse University students to buy, sell, and exchange items using Next.js, Supabase, and Vercel with real-time listings and university email authentication.",
+        "Designed row-level security policies in PostgreSQL via Supabase RLS to scope listing visibility and messaging to verified university users."
+      ]
+    }
+  ],
+  "certifications": []
+}

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResumeAI – ATS Keyword Optimizer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f0f4ff; --surface: #ffffff; --border: #e2e8f0;
+      --primary: #4f46e5; --green: #059669; --amber: #d97706; --red: #dc2626;
+      --text: #1e293b; --muted: #64748b; --xs: #94a3b8;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+    }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+    #root { min-height: 100%; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    .spin { animation: spin 1s linear infinite; }
+    .slide-up { animation: slideUp .35s ease both; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useRef } = React;
+const API = "http://localhost:8000";
+
+const LOADING_STEPS = [
+  "Extracting ATS keywords from job description…",
+  "Embedding resume bullets with OpenAI…",
+  "Embedding JD keywords…",
+  "Running vector search — assigning keywords to bullets…",
+  "Rewriting bullets with GPT-4o keyword injection…",
+  "Running verification pass for missing keywords…",
+  "Building formatted DOCX…",
+];
+
+// ─── helpers ────────────────────────────────────────────────────────────────
+
+function KeywordBadge({ keyword, before, after }) {
+  if (after && !before) return (
+    <span title="Newly injected" style={{
+      display:"inline-block", padding:"3px 9px", borderRadius:99, fontSize:11,
+      fontWeight:700, marginRight:4, marginBottom:5, cursor:"default",
+      background:"#d1fae5", color:"#065f46", border:"1px solid #6ee7b7",
+    }}>✦ {keyword}</span>
+  );
+  if (after) return (
+    <span title="Already in resume" style={{
+      display:"inline-block", padding:"3px 9px", borderRadius:99, fontSize:11,
+      fontWeight:600, marginRight:4, marginBottom:5, cursor:"default",
+      background:"#f0fdf4", color:"#16a34a", border:"1px solid #bbf7d0",
+    }}>✓ {keyword}</span>
+  );
+  return (
+    <span title="Not matched" style={{
+      display:"inline-block", padding:"3px 9px", borderRadius:99, fontSize:11,
+      fontWeight:600, marginRight:4, marginBottom:5, cursor:"default",
+      background:"#fef2f2", color:"#b91c1c", border:"1px solid #fecaca",
+    }}>✗ {keyword}</span>
+  );
+}
+
+function ChangeCard({ change, index, defaultOpen }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ border:"1px solid #e2e8f0", borderRadius:10, overflow:"hidden", marginBottom:10, background:"#fff" }}>
+      <button onClick={() => setOpen(o => !o)} style={{
+        width:"100%", display:"flex", alignItems:"center", gap:10,
+        padding:"12px 14px", background:"none", border:"none", cursor:"pointer", textAlign:"left",
+      }}>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ fontSize:11, color:"#6366f1", fontWeight:700, marginBottom:2 }}>
+            {change.section || `Bullet ${index + 1}`}
+          </div>
+          <div style={{ fontSize:12, color:"#475569", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+            {change.original}
+          </div>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0 }}>
+          {(change.injected_keywords?.length || 0) > 0 && (
+            <span style={{ fontSize:11, fontWeight:700, color:"#059669", background:"#d1fae5", borderRadius:99, padding:"2px 8px" }}>
+              +{change.injected_keywords.length} kw
+            </span>
+          )}
+          <span style={{ color:"#94a3b8" }}>{open ? "▲" : "▼"}</span>
+        </div>
+      </button>
+
+      {open && (
+        <div style={{ padding:"0 14px 14px" }}>
+          {change.injected_keywords?.length > 0 && (
+            <div style={{ marginBottom:10 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:"#64748b", letterSpacing:".5px", marginBottom:5 }}>INJECTED KEYWORDS</div>
+              {change.injected_keywords.map(kw => (
+                <span key={kw} style={{
+                  display:"inline-block", padding:"2px 9px", borderRadius:99, fontSize:11,
+                  fontWeight:700, marginRight:4, marginBottom:4,
+                  background:"#d1fae5", color:"#065f46", border:"1px solid #6ee7b7",
+                }}>{kw}</span>
+              ))}
+            </div>
+          )}
+          <div style={{ padding:"10px 12px", borderRadius:8, background:"#fff5f5", border:"1px solid #fecaca", marginBottom:8 }}>
+            <div style={{ fontSize:10, fontWeight:700, color:"#991b1b", marginBottom:3, letterSpacing:".5px" }}>ORIGINAL</div>
+            <div style={{ fontSize:13, color:"#7f1d1d", lineHeight:1.6 }}>{change.original}</div>
+          </div>
+          <div style={{ padding:"10px 12px", borderRadius:8, background:"#f0fdf4", border:"1px solid #bbf7d0" }}>
+            <div style={{ fontSize:10, fontWeight:700, color:"#065f46", marginBottom:3, letterSpacing:".5px" }}>REWRITTEN</div>
+            <div style={{ fontSize:13, color:"#14532d", lineHeight:1.6 }}>{change.rewritten}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LoadingOverlay({ step }) {
+  return (
+    <div style={{
+      position:"fixed", inset:0, background:"rgba(15,23,42,.65)",
+      backdropFilter:"blur(4px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:999,
+    }}>
+      <div style={{ background:"#fff", borderRadius:16, padding:"36px 40px", width:380, textAlign:"center", boxShadow:"0 20px 60px rgba(0,0,0,.3)" }}>
+        <div style={{ width:52, height:52, borderRadius:"50%", border:"4px solid #e0e7ff", borderTopColor:"#4f46e5", margin:"0 auto 20px", animation:"spin 1s linear infinite" }} />
+        <div style={{ fontSize:15, fontWeight:700, color:"#1e293b", marginBottom:8 }}>Optimizing Your Resume</div>
+        <div style={{ fontSize:13, color:"#64748b", lineHeight:1.6, minHeight:40 }}>{step}</div>
+        <div style={{ marginTop:14, fontSize:11, color:"#94a3b8" }}>This takes ~45–60 seconds</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── results panel ───────────────────────────────────────────────────────────
+
+function ResultsPanel({ result, onDownload }) {
+  const [kwFilter, setKwFilter] = useState("all");
+  const { keywords_total, keywords_before, keywords_after,
+          coverage_before, coverage_after, coverage_gain,
+          keyword_diff, changes, rewrites_count } = result;
+
+  const coverageColor = coverage_after >= 80 ? "#059669" : coverage_after >= 60 ? "#d97706" : "#dc2626";
+
+  const filtered = (keyword_diff || []).filter(k => {
+    if (kwFilter === "gained") return k.gained;
+    if (kwFilter === "missing") return !k.after;
+    return true;
+  });
+
+  return (
+    <div className="slide-up">
+      {/* Main score card */}
+      <div style={{
+        background:"linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%)",
+        borderRadius:14, padding:"24px 28px", color:"#fff", marginBottom:16,
+      }}>
+        <div style={{ fontSize:11, opacity:.8, fontWeight:700, letterSpacing:"1px", marginBottom:14 }}>ATS KEYWORD COVERAGE</div>
+        <div style={{ display:"flex", alignItems:"center", gap:20, flexWrap:"wrap" }}>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:34, fontWeight:800, opacity:.75 }}>{coverage_before}%</div>
+            <div style={{ fontSize:11, opacity:.7 }}>{keywords_before} / {keywords_total} keywords</div>
+            <div style={{ fontSize:10, opacity:.65, marginTop:2 }}>BEFORE</div>
+          </div>
+          <div style={{ fontSize:26, opacity:.6 }}>→</div>
+          <div style={{ textAlign:"center" }}>
+            <div style={{ fontSize:44, fontWeight:900 }}>{coverage_after}%</div>
+            <div style={{ fontSize:12, opacity:.9 }}>{keywords_after} / {keywords_total} keywords</div>
+            <div style={{ fontSize:11, opacity:.8, marginTop:2 }}>AFTER</div>
+          </div>
+          <div style={{ marginLeft:"auto", textAlign:"center" }}>
+            <div style={{ background:"rgba(255,255,255,.18)", borderRadius:12, padding:"10px 20px" }}>
+              <div style={{ fontSize:28, fontWeight:900 }}>+{coverage_gain}%</div>
+              <div style={{ fontSize:11, opacity:.85 }}>+{keywords_after - keywords_before} keywords gained</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop:18 }}>
+          <div style={{ height:8, background:"rgba(255,255,255,.2)", borderRadius:99, overflow:"hidden" }}>
+            <div style={{ height:"100%", width:`${Math.min(coverage_after,100)}%`, background:"rgba(255,255,255,.9)", borderRadius:99, transition:"width .8s" }} />
+          </div>
+          <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, opacity:.65, marginTop:4 }}>
+            <span>0%</span><span>Target: 80%+</span><span>100%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Download */}
+      <button onClick={onDownload} style={{
+        width:"100%", padding:"13px", borderRadius:10, border:"none",
+        background:"#059669", color:"#fff", fontSize:14, fontWeight:700, cursor:"pointer", marginBottom:16,
+      }}>
+        ⬇ Download Optimized Resume ({rewrites_count} bullets rewritten)
+      </button>
+
+      {/* Keyword breakdown */}
+      <div style={{ background:"#fff", borderRadius:12, padding:"18px", border:"1px solid #e2e8f0", marginBottom:16 }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12, flexWrap:"wrap", gap:8 }}>
+          <div style={{ fontSize:13, fontWeight:700 }}>
+            Keywords ({keywords_total} total · <span style={{ color:"#059669" }}>{keywords_after} matched</span> · <span style={{ color:"#dc2626" }}>{keywords_total - keywords_after} missing</span>)
+          </div>
+          <div style={{ display:"flex", gap:5 }}>
+            {[["all","All"], ["gained","✦ Gained"], ["missing","✗ Missing"]].map(([v,l]) => (
+              <button key={v} onClick={() => setKwFilter(v)} style={{
+                padding:"4px 10px", borderRadius:99, border:"1px solid #e2e8f0", fontSize:11, fontWeight:600,
+                cursor:"pointer", background: kwFilter===v ? "#4f46e5" : "#fff", color: kwFilter===v ? "#fff" : "#64748b",
+              }}>{l}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display:"flex", flexWrap:"wrap" }}>
+          {filtered.map(k => <KeywordBadge key={k.keyword} keyword={k.keyword} before={k.before} after={k.after} />)}
+          {filtered.length === 0 && <div style={{ fontSize:12, color:"#94a3b8", padding:"8px 0" }}>No keywords in this filter</div>}
+        </div>
+      </div>
+
+      {/* Changes */}
+      {changes?.length > 0 && (
+        <div>
+          <div style={{ fontSize:13, fontWeight:700, color:"#1e293b", marginBottom:10 }}>
+            Rewritten Bullets ({changes.length})
+          </div>
+          {changes.map((c, i) => <ChangeCard key={i} change={c} index={i} defaultOpen={i < 2} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── app ─────────────────────────────────────────────────────────────────────
+
+function App() {
+  const [mode, setMode] = useState("paste");
+  const [jdText, setJdText] = useState("");
+  const [jdUrl, setJdUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [stepIdx, setStepIdx] = useState(0);
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const timerRef = useRef(null);
+
+  const startSteps = () => {
+    let i = 0; setStepIdx(0);
+    timerRef.current = setInterval(() => {
+      i = Math.min(i + 1, LOADING_STEPS.length - 1);
+      setStepIdx(i);
+    }, 7500);
+  };
+  const stopSteps = () => { if (timerRef.current) clearInterval(timerRef.current); };
+
+  const handleGenerate = async () => {
+    if (mode === "paste" && !jdText.trim()) { setError("Please paste the job description."); return; }
+    if (mode === "url" && !jdUrl.trim()) { setError("Please enter the job posting URL."); return; }
+    setError(null); setResult(null); setLoading(true); startSteps();
+    try {
+      const body = mode === "url"
+        ? { jd_url: jdUrl.trim(), jd_text: "" }
+        : { jd_text: jdText.trim(), jd_url: "" };
+      const res = await fetch(`${API}/api/generate`, {
+        method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const detail = await res.json().then(d => d.detail).catch(() => "Unknown error");
+        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+      }
+      setResult(await res.json());
+    } catch(err) {
+      setError(err.message || "Something went wrong. Is the API server running on port 8000?");
+    } finally {
+      stopSteps(); setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ minHeight:"100vh", background:"var(--bg)", padding:"24px 16px" }}>
+      {loading && <LoadingOverlay step={LOADING_STEPS[stepIdx]} />}
+
+      <div style={{ maxWidth:1100, margin:"0 auto" }}>
+        {/* Header */}
+        <div style={{ textAlign:"center", marginBottom:26 }}>
+          <div style={{ fontSize:26, fontWeight:900, color:"#1e293b" }}>
+            ResumeAI <span style={{ color:"#4f46e5" }}>ATS Optimizer</span>
+          </div>
+          <div style={{ fontSize:13, color:"#64748b", marginTop:4 }}>
+            Vector-search keyword injection → 80–90% ATS keyword coverage
+          </div>
+        </div>
+
+        <div style={{ display:"grid", gridTemplateColumns:"380px 1fr", gap:20, alignItems:"start" }}>
+
+          {/* Left: input */}
+          <div style={{
+            background:"#fff", borderRadius:14, padding:"22px",
+            border:"1px solid #e2e8f0", boxShadow:"var(--shadow)", position:"sticky", top:16,
+          }}>
+            <div style={{ fontSize:15, fontWeight:700, marginBottom:3 }}>Job Description</div>
+            <div style={{ fontSize:12, color:"#64748b", marginBottom:14 }}>Paste the JD text or enter a URL</div>
+
+            {/* Tabs */}
+            <div style={{ display:"flex", background:"#f1f5f9", borderRadius:8, padding:3, marginBottom:14 }}>
+              {[["paste","✏️ Paste Text"],["url","🔗 URL"]].map(([v,l]) => (
+                <button key={v} onClick={() => setMode(v)} style={{
+                  flex:1, padding:"8px", borderRadius:6, border:"none", cursor:"pointer",
+                  fontSize:13, fontWeight:600, transition:"all .15s",
+                  background: mode===v ? "#fff" : "transparent",
+                  color: mode===v ? "#4f46e5" : "#64748b",
+                  boxShadow: mode===v ? "0 1px 3px rgba(0,0,0,.1)" : "none",
+                }}>{l}</button>
+              ))}
+            </div>
+
+            {mode === "paste" ? (
+              <textarea value={jdText} onChange={e => setJdText(e.target.value)}
+                placeholder={"Paste the full job description here…\n\nSoftware Engineer 4\n\nQualifications:\n- Experience with microservices…"}
+                rows={15}
+                style={{ width:"100%", padding:"11px 12px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:13, lineHeight:1.6, resize:"vertical", outline:"none", fontFamily:"inherit", background:"#f8faff", transition:"border-color .2s" }}
+                onFocus={e => e.target.style.borderColor="#4f46e5"}
+                onBlur={e => e.target.style.borderColor="#e2e8f0"}
+              />
+            ) : (
+              <div>
+                <input value={jdUrl} onChange={e => setJdUrl(e.target.value)}
+                  placeholder="https://jobs.example.com/senior-engineer"
+                  style={{ width:"100%", padding:"11px 13px", borderRadius:8, border:"1.5px solid #e2e8f0", fontSize:14, outline:"none", background:"#f8faff", transition:"border-color .2s" }}
+                  onFocus={e => e.target.style.borderColor="#4f46e5"}
+                  onBlur={e => e.target.style.borderColor="#e2e8f0"}
+                />
+                <div style={{ marginTop:10, padding:"10px 12px", borderRadius:8, background:"#fffbeb", border:"1px solid #fde68a", fontSize:12, color:"#92400e", lineHeight:1.6 }}>
+                  <strong>⚠ Note:</strong> Netflix, Lever, Greenhouse, Workday load via JavaScript and can't be fetched by URL. Switch to <strong>✏️ Paste Text</strong> if you get an error.
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div style={{ marginTop:12, padding:"12px 14px", borderRadius:8, background:"#fff5f5", border:"1px solid #fca5a5", fontSize:13, color:"#dc2626", lineHeight:1.6 }}>
+                <div style={{ fontWeight:700, marginBottom: error.includes("\n") ? 6 : 0 }}>⚠ {error.split("\n")[0]}</div>
+                {error.includes("\n") && <div style={{ color:"#7f1d1d", marginTop:4, whiteSpace:"pre-wrap" }}>{error.split("\n").slice(1).join("\n").trim()}</div>}
+              </div>
+            )}
+
+            <button onClick={handleGenerate} disabled={loading} style={{
+              width:"100%", marginTop:14, padding:"13px", borderRadius:10, border:"none",
+              cursor: loading ? "not-allowed" : "pointer",
+              background: loading ? "#a5b4fc" : "linear-gradient(135deg,#4f46e5,#7c3aed)",
+              color:"#fff", fontSize:15, fontWeight:700, transition:"opacity .2s",
+            }}>
+              {loading ? "⏳ Optimizing…" : "✦ Generate Optimized Resume"}
+            </button>
+
+            <div style={{ marginTop:16, padding:"12px 14px", background:"#f8faff", borderRadius:8, fontSize:12, color:"#64748b", lineHeight:1.8 }}>
+              <div style={{ fontWeight:700, color:"#4f46e5", marginBottom:3 }}>How it works</div>
+              <div>① Extracts 25–50 ATS keywords from JD</div>
+              <div>② Vector-searches each keyword → best bullet</div>
+              <div>③ GPT injects keywords verbatim</div>
+              <div>④ Targets 80–90% keyword coverage</div>
+            </div>
+          </div>
+
+          {/* Right: results */}
+          <div>
+            {!result && !loading && (
+              <div style={{ background:"#fff", borderRadius:14, padding:"56px 32px", border:"1px solid #e2e8f0", textAlign:"center", color:"#94a3b8" }}>
+                <div style={{ fontSize:52, marginBottom:14 }}>🎯</div>
+                <div style={{ fontSize:16, fontWeight:700, color:"#64748b", marginBottom:10 }}>Ready to optimize</div>
+                <div style={{ fontSize:13, lineHeight:1.8 }}>
+                  Paste a job description and click Generate.<br/>
+                  The tool injects 80–90% of the JD's ATS keywords<br/>
+                  into your resume bullets using vector search + GPT.
+                </div>
+              </div>
+            )}
+            {result && <ResultsPanel result={result} onDownload={() => result?.filename && window.open(`${API}/api/download/${result.filename}`)} />}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          div[style*="gridTemplateColumns"] { grid-template-columns: 1fr !important; }
+          div[style*="position:sticky"], div[style*="position: sticky"] { position: static !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

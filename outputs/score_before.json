@@ -1,0 +1,205 @@
+{
+  "overall_score": 0.7058220684210791,
+  "requirement_coverage": [
+    {
+      "requirement": "Design, implement, and optimize ELT workflows using Python, SQL, and orchestration frameworks such as Airflow",
+      "best_match_bullet": "Designed and maintained production-grade Airflow DAGs and Python/SQL ELT orchestration workflows to schedule batch pipelines and warehouse model updates, processing millions of records daily with automated data quality alerting and retry logic.",
+      "score": 0.8344721581303003,
+      "keyword_score": 0.9,
+      "semantic_score": 0.7361803953257505,
+      "keywords_checked": [
+        "design",
+        "implement",
+        "optimize",
+        "elt",
+        "workflows",
+        "python",
+        "sql",
+        "orchestration",
+        "frameworks",
+        "airflow"
+      ]
+    },
+    {
+      "requirement": "Improve data quality, observability, and operational excellence through testing, alerting, documentation, and root-cause analysis",
+      "best_match_bullet": "Designed data quality frameworks and automated validation checks using dbt tests, enabling root-cause analysis and observability through alerting and documentation.",
+      "score": 0.7832070792222678,
+      "keyword_score": 0.8333333333333334,
+      "semantic_score": 0.7080176980556694,
+      "keywords_checked": [
+        "data quality",
+        "improve",
+        "quality",
+        "observability",
+        "operational",
+        "excellence",
+        "through",
+        "testing",
+        "alerting",
+        "documentation",
+        "root-cause",
+        "analysis"
+      ]
+    },
+    {
+      "requirement": "Contribute to platform architecture decisions involving AWS, Snowflake, data lake storage, and CI/CD practices",
+      "best_match_bullet": "Contributed to cloud data platform architecture leveraging AWS S3 data lake storage, Snowflake warehousing, and CI/CD pipeline automation to power product analytics and executive dashboards.",
+      "score": 0.8020809025033466,
+      "keyword_score": 0.8333333333333334,
+      "semantic_score": 0.7552022562583663,
+      "keywords_checked": [
+        "contribute",
+        "platform",
+        "architecture",
+        "decisions",
+        "involving",
+        "aws",
+        "snowflake",
+        "data",
+        "lake",
+        "storage",
+        "ci/cd",
+        "practices"
+      ]
+    },
+    {
+      "requirement": "5+ years of experience building production-grade data pipelines and warehouse models",
+      "best_match_bullet": "Built and scaled production-grade distributed data processing pipelines using Apache Spark and AWS EKS, managing multi-terabyte workloads across 5+ years of data engineering to ensure horizontally scalable reliability for warehouse analytics.",
+      "score": 0.5015373593115738,
+      "keyword_score": 0.4,
+      "semantic_score": 0.6538433982789346,
+      "keywords_checked": [
+        "data pipelines",
+        "warehouse models",
+        "production-grade",
+        "pipelines",
+        "models"
+      ]
+    },
+    {
+      "requirement": "Strong proficiency in Python and SQL for transformation, automation, and data processing",
+      "best_match_bullet": "Designed and maintained production-grade Airflow DAGs and Python/SQL ELT orchestration workflows to schedule batch pipelines and warehouse model updates, processing millions of records daily with automated data quality alerting and retry logic.",
+      "score": 0.6954241656168952,
+      "keyword_score": 0.8333333333333334,
+      "semantic_score": 0.4885604140422381,
+      "keywords_checked": [
+        "python",
+        "sql",
+        "transformation",
+        "automation",
+        "data",
+        "processing"
+      ]
+    },
+    {
+      "requirement": "Hands-on experience with Airflow or similar orchestration tools in production environments",
+      "best_match_bullet": "Designed and maintained production-grade Airflow DAGs and Python/SQL ELT orchestration workflows to schedule batch pipelines and warehouse model updates, processing millions of records daily with automated data quality alerting and retry logic.",
+      "score": 0.6311366385757048,
+      "keyword_score": 0.6666666666666666,
+      "semantic_score": 0.577841596439262,
+      "keywords_checked": [
+        "hands-on",
+        "airflow",
+        "orchestration",
+        "tools",
+        "production",
+        "environments"
+      ]
+    },
+    {
+      "requirement": "Experience working with cloud data platforms such as AWS, Snowflake, Redshift, or Databricks",
+      "best_match_bullet": "Contributed to cloud data platform architecture leveraging AWS S3 data lake storage, Snowflake warehousing, and CI/CD pipeline automation to power product analytics and executive dashboards.",
+      "score": 0.7017034431580337,
+      "keyword_score": 0.7142857142857143,
+      "semantic_score": 0.6828300364665129,
+      "keywords_checked": [
+        "cloud",
+        "data",
+        "platforms",
+        "aws",
+        "snowflake",
+        "redshift",
+        "databricks"
+      ]
+    },
+    {
+      "requirement": "Familiarity with distributed processing technologies such as Spark or Flink",
+      "best_match_bullet": "Built and scaled production-grade distributed data processing pipelines using Apache Spark and AWS EKS, managing multi-terabyte workloads across 5+ years of data engineering to ensure horizontally scalable reliability for warehouse analytics.",
+      "score": 0.69701480085051,
+      "keyword_score": 0.8,
+      "semantic_score": 0.5425370021262752,
+      "keywords_checked": [
+        "distributed processing",
+        "processing",
+        "technologies",
+        "spark",
+        "flink"
+      ]
+    }
+  ],
+  "weak_bullets": [
+    {
+      "section": "Experience - Software Developer",
+      "experience_index": 0,
+      "index": 2,
+      "bullet": "Built and scaled production-grade distributed data processing pipelines using Apache Spark and AWS EKS, managing multi-terabyte workloads across 5+ years of data engineering to ensure horizontally scalable reliability for warehouse analytics.",
+      "best_score": 0.6538433982789346
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 1,
+      "index": 0,
+      "bullet": "Partnered with technical and non-technical stakeholders\u2014product, finance, and engineering teams\u2014to translate ambiguous requirements into trusted datasets and self-service analytics products.",
+      "best_score": 0.4870941818558589
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 1,
+      "index": 1,
+      "bullet": "Spearheaded design of a Contract Intelligence Platform leveraging Spring Boot, Redis, Kafka, and Hugging Face Transformers, delivering 1,000+ real-time document inferences/day while reducing query latency by 70%.",
+      "best_score": 0.4609175319871647
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 1,
+      "index": 2,
+      "bullet": "Devised and productionized a multi-agent RAG architecture (FAISS, Sentence Transformers, LangChain, OpenAI API) achieving 89% top 3 recall, directly elevating bid-win probability and proposal velocity.",
+      "best_score": 0.34889428523205324
+    },
+    {
+      "section": "Experience - Software Developer Intern",
+      "experience_index": 1,
+      "index": 3,
+      "bullet": "Established container-native CI/CD pipelines through GitHub Actions and Jenkins, enabling zero-downtime deployments and proactive telemetry on Azure Kubernetes Service (AKS) clusters.",
+      "best_score": 0.4124866906290596
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 2,
+      "index": 0,
+      "bullet": "Implemented infrastructure-as-code workflows using Terraform and CloudFormation, enabling reproducible data platform deployments with CI/CD automation and dbt model versioning.",
+      "best_score": 0.5216447532464108
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 2,
+      "index": 1,
+      "bullet": "Developed high-throughput Node.js microservices backed by PostgreSQL, achieving sub-100ms response times for analytics dashboards consumed by executive leadership.",
+      "best_score": 0.43537928525595243
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 2,
+      "index": 2,
+      "bullet": "Mentored junior engineers in data engineering best practices\u2014pipeline design, SQL optimization, and testing\u2014while driving adoption of data quality frameworks and observability standards.",
+      "best_score": 0.5417872440624099
+    },
+    {
+      "section": "Experience - Software Engineer",
+      "experience_index": 2,
+      "index": 3,
+      "bullet": "Spearheaded DevOps excellence through Agile, TDD, and performance-tuning sprints, hardening CI/CD pipelines and accelerating feature delivery velocity by 45%.",
+      "best_score": 0.4850634416630377
+    }
+  ]
+}
