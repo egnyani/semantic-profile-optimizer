@@ -28,7 +28,9 @@
 
 <script type="text/babel">
 const { useState, useRef } = React;
-const API = "http://localhost:8000";
+// Empty string = relative paths ("/api/...") so the app works on any host:
+// locally via uvicorn, and on Vercel without changing a line.
+const API = "";
 
 const LOADING_STEPS = [
   "Extracting ATS keywords from job description…",

@@ -161,6 +161,20 @@ class GenerateRequest(BaseModel):
 
 # ── routes ─────────────────────────────────────────────────────────────────
 
+@app.get("/", include_in_schema=False)
+def root():
+    """Serve the browser UI.
+
+    FileResponse reads frontend.html from the project root, which is bundled
+    into the Vercel deployment package (the file is committed to git and not
+    gitignored).  Falls back to a JSON message if the file is somehow absent.
+    """
+    html_path = Path("frontend.html")
+    if html_path.exists():
+        return FileResponse(str(html_path), media_type="text/html")
+    return {"message": "Resume Matcher API is running"}
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
