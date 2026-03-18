@@ -68,6 +68,7 @@
 [2026-03-18 09:00:00] MODIFIED api.py  — replaced the hard stop for JS-rendered job URLs with a browser-rendered Playwright fallback
 [2026-03-18 09:00:01] MODIFIED requirements.txt  — added Playwright Python dependency for browser-based URL extraction
 [2026-03-18 09:00:02] MODIFIED frontend.html  — updated the URL input note to explain the automatic browser-rendered fallback
+[2026-03-18 09:10:00] MODIFIED api.py  — stopped forcing Playwright for known JS job-board domains when the static fetch already returns enough text
 [2026-03-17 12:17:13] MODIFIED pipeline/rewriter.py  — Strengthened Groq rewrite prompt to mirror all JD requirements and exact JD terminology
 [2026-03-17 12:17:13] MODIFIED config.py  — Lowered similarity threshold to 0.55 and raised rewrite cap to 15 for more aggressive tailoring
 [2026-03-17 12:17:24] CREATED  data/Gnyani_Resume_Final__2_.docx  — Copied actual resume into project data path for live pipeline runs

@@ -149,7 +149,7 @@ def _fetch_url_text(url: str) -> str:
     else:
         static_error = None
 
-    if len(text.split()) >= 150 and not is_known_spa:
+    if len(text.split()) >= 150:
         return text
 
     try:
