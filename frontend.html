@@ -819,6 +819,7 @@ function ResultsPanel({ result, onDownload }) {
   } = result;
 
   const gained = keywords_after - keywords_before;
+  const present = keywords_before;
   const missing = keywords_total - keywords_after;
 
   const afterColor =
@@ -827,6 +828,7 @@ function ResultsPanel({ result, onDownload }) {
 
   const filtered = (keyword_diff || []).filter(k => {
     if (kwFilter === "gained")  return k.gained;
+    if (kwFilter === "present") return k.before;
     if (kwFilter === "missing") return !k.after;
     return true;
   });
@@ -884,6 +886,8 @@ function ResultsPanel({ result, onDownload }) {
             <span className="section-title">Keywords</span>
             <span className="section-count" style={{ marginLeft: 8 }}>
               {keywords_total} total
+              &nbsp;·&nbsp;<span style={{ color: "var(--text-secondary)" }}>{present} already present</span>
+              &nbsp;·&nbsp;<span style={{ color: "var(--accent)" }}>{gained} gained</span>
               &nbsp;·&nbsp;<span style={{ color: "var(--green)" }}>{keywords_after} matched</span>
               &nbsp;·&nbsp;<span style={{ color: "var(--red)" }}>{missing} missing</span>
             </span>
@@ -892,6 +896,7 @@ function ResultsPanel({ result, onDownload }) {
             {[
               ["all",     "All"],
               ["gained",  `+${gained} gained`],
+              ["present", `${present} present`],
               ["missing", `${missing} missing`],
             ].map(([v, l]) => (
               <button

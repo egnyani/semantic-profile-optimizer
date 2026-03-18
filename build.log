@@ -247,3 +247,4 @@
 [2026-03-17 17:10:38] MODIFIED outputs/score_before.json  — Saved intermediate pipeline JSON
 [2026-03-17 17:10:38] CREATED  outputs/report_20260317_171038.md  — Saved markdown resume match report
 [2026-03-17 17:10:38] RUN      main.py --resume outputs/Gnyani_Meridian_Loop_Senior_Data_Engineer.docx --jd data/sample_jd.txt --dry-run --verbose  — Pipeline completed successfully; report saved to outputs/report_20260317_171038.md
+[2026-03-18 13:01:56] MODIFIED frontend.html  — Added already-present keyword counts and filter alongside gained and missing in the results UI
