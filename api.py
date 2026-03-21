@@ -41,6 +41,7 @@ from pipeline.jd_extractor import extract_company_role, extract_jd_keywords
 from pipeline.parser import parse_resume
 from pipeline.rewriter import keyword_driven_rewrite
 from pipeline.scorer import compute_keyword_coverage
+from pipeline.pdf_converter import convert_docx_to_pdf
 from pipeline.xml_builder import xml_patch_docx
 
 # ── constants ──────────────────────────────────────────────────────────────
@@ -271,14 +272,23 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
     identity = extract_company_role(jd_text)
     company = _sanitize(identity.get("company", "Company"))
     role = _sanitize(identity.get("role", "Role"))
-    filename = f"Gnyani_{company}_{role}.docx"
-    output_path = OUTPUTS_DIR / filename
+    docx_filename = f"Gnyani_{company}_{role}.docx"
+    output_path = OUTPUTS_DIR / docx_filename
     xml_patch_docx(ORIGINAL_RESUME, rewrites, output_path)
 
-    # 9. Enrich rewrites with section labels
+    # 9. Convert DOCX → PDF via Google Drive API (falls back to DOCX on error)
+    pdf_error = None
+    try:
+        pdf_path = convert_docx_to_pdf(output_path)
+        filename = pdf_path.name
+    except Exception as exc:
+        pdf_error = str(exc)
+        filename = docx_filename
+
+    # 10. Enrich rewrites with section labels
     enriched = _enrich_rewrites(rewrites, resume_json)
 
-    # 10. Build per-keyword before/after diff
+    # 11. Build per-keyword before/after diff
     before_map = {r["keyword"]: r["matched"] for r in before_cov["keywords"]}
     after_map  = {r["keyword"]: r["matched"] for r in after_cov["keywords"]}
 
@@ -301,6 +311,7 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
 
     return {
         "filename": filename,
+        "pdf_error": pdf_error,
         # Primary metric: keyword coverage
         "keywords_total":   len(keywords),
         "keywords_before":  before_cov["matched"],
@@ -318,13 +329,14 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
 
 @app.get("/api/download/{filename}")
 def download(filename: str):
-    """Download the generated DOCX."""
+    """Download the generated resume (PDF or DOCX)."""
     safe_name = Path(filename).name
     path = OUTPUTS_DIR / safe_name
-    if not path.exists() or path.suffix != ".docx":
+    if not path.exists() or path.suffix not in (".pdf", ".docx"):
         raise HTTPException(status_code=404, detail="File not found.")
-    return FileResponse(
-        path=str(path),
-        filename=safe_name,
-        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    media_type = (
+        "application/pdf"
+        if path.suffix == ".pdf"
+        else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     )
+    return FileResponse(path=str(path), filename=safe_name, media_type=media_type)
