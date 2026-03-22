@@ -13,4 +13,4 @@ COPY app.py .
 ENV PORT=8000
 EXPOSE 8000
 
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8000", "--timeout", "120"]
+CMD gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
