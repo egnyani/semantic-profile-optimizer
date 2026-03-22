@@ -1224,7 +1224,16 @@ function App() {
             {result && (
               <ResultsPanel
                 result={result}
-                onDownload={() => result?.filename && window.open(`${API}/api/download/${result.filename}`)}
+                onDownload={() => {
+                  if (!result?.file_b64 || !result?.filename) return;
+                  const mime = result.filename.endsWith('.pdf') ? 'application/pdf'
+                    : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                  const bytes = Uint8Array.from(atob(result.file_b64), c => c.charCodeAt(0));
+                  const url = URL.createObjectURL(new Blob([bytes], { type: mime }));
+                  const a = document.createElement('a');
+                  a.href = url; a.download = result.filename; a.click();
+                  URL.revokeObjectURL(url);
+                }}
               />
             )}
           </div>

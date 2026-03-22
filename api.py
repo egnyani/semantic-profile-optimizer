@@ -20,6 +20,7 @@ GET  /api/health     – liveness check
 
 from __future__ import annotations
 
+import base64
 import os
 import re
 import uuid
@@ -276,13 +277,13 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
     output_path = OUTPUTS_DIR / docx_filename
     xml_patch_docx(ORIGINAL_RESUME, rewrites, output_path)
 
-    # 9. Convert DOCX → PDF via Google Drive API (falls back to DOCX on error)
-    pdf_error = None
+    # 9. Convert DOCX → PDF (falls back to DOCX on error)
     try:
         pdf_path = convert_docx_to_pdf(output_path)
+        download_path = pdf_path
         filename = pdf_path.name
-    except Exception as exc:
-        pdf_error = str(exc)
+    except Exception:
+        download_path = output_path
         filename = docx_filename
 
     # 10. Enrich rewrites with section labels
@@ -309,8 +310,13 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
         for kw in keywords
     ]
 
+    # Encode file as base64 so the frontend can download without a second request
+    # (avoids Vercel cold-start "File not found" on the separate download endpoint)
+    file_b64 = base64.b64encode(download_path.read_bytes()).decode("ascii")
+
     return {
         "filename": filename,
+        "file_b64": file_b64,
         # Primary metric: keyword coverage
         "keywords_total":   len(keywords),
         "keywords_before":  before_cov["matched"],
