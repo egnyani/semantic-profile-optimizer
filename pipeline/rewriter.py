@@ -50,7 +50,13 @@ def _client() -> OpenAI:
 
 
 def _clean_bullet(text: str) -> str:
-    return re.sub(r"^[\-\*\u2022]\s*", "", text.replace("\n", " ").strip().strip('"'))
+    text = re.sub(r"^[\-\*\u2022]\s*", "", text.replace("\n", " ").strip().strip('"'))
+    # Remove spaces before punctuation (e.g. "behavior ," → "behavior,")
+    text = re.sub(r"\s+([,;:.!?])", r"\1", text)
+    # Ensure bullet ends with a period
+    if text and text[-1] not in ".!?":
+        text += "."
+    return text
 
 
 def cosine_sim(a: list[float], b: list[float]) -> float:
