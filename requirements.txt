@@ -7,5 +7,4 @@ fastapi
 uvicorn[standard]
 lxml
 playwright
-google-auth
 requests
