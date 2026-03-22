@@ -230,6 +230,13 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/debug-env")
+def debug_env():
+    """Temporary: check if GOOGLE_SERVICE_ACCOUNT_JSON is loaded (shows length only)."""
+    val = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")
+    return {"google_json_length": len(val), "is_set": bool(val.strip())}
+
+
 @app.post("/api/generate")
 def generate(req: GenerateRequest) -> dict[str, Any]:
     """Run the full keyword-coverage pipeline and return results."""
