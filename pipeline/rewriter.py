@@ -280,3 +280,140 @@ def keyword_driven_rewrite(
         })
 
     return updated, rewrites, assignment
+
+
+# ── narrative-driven rewrite (new pipeline) ───────────────────────────────────
+
+def _narrative_rewrite_bullet(
+    bullet: str,
+    emphasis: str,
+    resume_arc: str,
+    engineering_identity: str,
+    rephraseable_kws: list[str],
+    context: dict[str, Any],
+) -> str:
+    """
+    Rewrite a single bullet using story context rather than verbatim injection.
+    Keywords are suggestions — included only if they fit naturally.
+    """
+    anchors = _extract_factual_anchors(bullet, context)
+    anchor_note = ", ".join(anchors) if anchors else "all numbers, percentages, and technology names"
+    kw_block = (
+        "\n".join(f'  • "{kw}"' for kw in rephraseable_kws)
+        if rephraseable_kws
+        else "  (none — focus purely on the story angle)"
+    )
+
+    prompt = (
+        "You are a senior technical career editor rewriting a resume bullet.\n\n"
+        f"ROLE THIS RESUME IS TARGETING: {engineering_identity}\n"
+        f"OVERALL RESUME STORY: {resume_arc}\n\n"
+        f"THIS BULLET'S JOB IN THE STORY: {emphasis}\n\n"
+        f"ORIGINAL BULLET:\n{bullet}\n\n"
+        f"FACTUAL ANCHORS — preserve these exactly (do not remove or alter):\n  {anchor_note}\n\n"
+        f"KEYWORDS TO WEAVE IN NATURALLY (include only if they genuinely fit — do not force):\n{kw_block}\n\n"
+        "RULES:\n"
+        "1. Reframe the bullet to reinforce the story angle above — adjust emphasis, not facts.\n"
+        "2. If a keyword from the list fits naturally in context, use it. If it doesn't fit, skip it.\n"
+        "3. Do NOT invent tools, metrics, or experiences not in the original bullet.\n"
+        "4. Preserve all factual anchors exactly.\n"
+        "5. Start with a strong action verb. Keep under 35 words.\n"
+        "6. Return ONLY the bullet text — no quotes, no preamble."
+    )
+
+    result = _clean_bullet(
+        _client().chat.completions.create(
+            model=REWRITE_MODEL,
+            max_tokens=160,
+            temperature=0.2,
+            messages=[{"role": "user", "content": prompt}],
+        ).choices[0].message.content or ""
+    )
+
+    # Verify factual anchors are preserved — run a fix pass if any are missing
+    missing_anchors = _missing(result, anchors)
+    if missing_anchors:
+        fix_block = "\n".join(f"  • {a}" for a in missing_anchors)
+        fix_prompt = (
+            "The rewritten bullet below is missing some required factual anchors. Add them back.\n\n"
+            f"CURRENT REWRITE:\n{result}\n\n"
+            f"MISSING ANCHORS (add these verbatim):\n{fix_block}\n\n"
+            f"ORIGINAL BULLET (for context):\n{bullet}\n\n"
+            "RULES: Preserve everything else. Under 35 words. Return ONLY the bullet text."
+        )
+        fixed = _clean_bullet(
+            _client().chat.completions.create(
+                model=REWRITE_MODEL,
+                max_tokens=160,
+                temperature=0.1,
+                messages=[{"role": "user", "content": fix_prompt}],
+            ).choices[0].message.content or ""
+        )
+        if len(_missing(fixed, anchors)) < len(missing_anchors):
+            result = fixed
+
+    return result
+
+
+def narrative_driven_rewrite(
+    resume_json: dict[str, Any],
+    narrative_plan: "NarrativePlan",  # type: ignore[name-defined]
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Narrative-aware rewriting pipeline.
+
+    Uses a NarrativePlan (from narrative_planner.classify_and_plan) to rewrite
+    bullets with story coherence rather than verbatim keyword injection.
+
+    Parameters
+    ----------
+    resume_json     : parsed resume (source of truth)
+    narrative_plan  : plan produced by narrative_planner.classify_and_plan()
+
+    Returns
+    -------
+    updated_resume  : resume_json with rewritten bullet strings
+    rewrites        : [{original, rewritten, injected_keywords, emphasis}, ...]
+    """
+    updated = deepcopy(resume_json)
+    rewrites: list[dict[str, Any]] = []
+
+    for bp in narrative_plan.bullet_plans:
+        # "keep" bullets are left untouched
+        if bp.action == "keep" or not bp.original:
+            continue
+
+        context = {}
+        try:
+            context = updated["experience"][bp.exp_idx]
+        except (IndexError, KeyError):
+            pass
+
+        rewritten = _narrative_rewrite_bullet(
+            bullet=bp.original,
+            emphasis=bp.emphasis,
+            resume_arc=narrative_plan.resume_arc,
+            engineering_identity=narrative_plan.engineering_identity,
+            rephraseable_kws=bp.rephraseable_kws,
+            context=context,
+        )
+
+        # Patch the resume in-place
+        updated["experience"][bp.exp_idx]["bullets"][bp.bullet_idx] = rewritten
+
+        # Track which rephraseable keywords actually landed in the rewrite
+        rewritten_lower = rewritten.lower()
+        actually_incorporated = [
+            kw for kw in bp.rephraseable_kws
+            if kw.lower() in rewritten_lower
+        ]
+
+        rewrites.append({
+            "original": bp.original,
+            "rewritten": rewritten,
+            "injected_keywords": actually_incorporated,
+            "emphasis": bp.emphasis,
+            "action": bp.action,
+        })
+
+    return updated, rewrites

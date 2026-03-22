@@ -1,4 +1,5 @@
 """Job description extraction utilities."""
+# narrative intent extraction added — extract_jd_narrative_intent()
 
 from __future__ import annotations
 
@@ -158,6 +159,62 @@ def extract_jd_keywords(jd_text: str, dry_run: bool = False) -> list[str]:
         return [str(k).strip() for k in keywords if str(k).strip()]
     except Exception as exc:
         raise RuntimeError(f"Failed to extract JD keywords: {exc}") from exc
+
+
+def extract_jd_narrative_intent(jd_text: str, dry_run: bool = False) -> dict[str, Any]:
+    """Extract the engineering identity and story arc the JD is looking for.
+
+    Returns a dict with:
+      - engineering_identity: short label for the type of engineer wanted
+      - dominant_themes: list of 3-5 core themes
+      - arc_description: what a believable candidate arc looks like
+    """
+    if dry_run or not OPENAI_API_KEY:
+        # Heuristic fallback: pull the most repeated meaningful nouns
+        words = re.findall(r"\b[a-z][a-z\-]+\b", jd_text.lower())
+        stopwords = {"and", "the", "with", "for", "our", "you", "your", "this",
+                     "that", "will", "have", "from", "are", "such", "ability",
+                     "experience", "including", "qualifications", "preferred"}
+        freq: dict[str, int] = {}
+        for w in words:
+            if w not in stopwords and len(w) > 4:
+                freq[w] = freq.get(w, 0) + 1
+        top = sorted(freq, key=lambda w: freq[w], reverse=True)[:5]
+        return {
+            "engineering_identity": "software engineer",
+            "dominant_themes": top,
+            "arc_description": "Candidate with relevant technical experience.",
+        }
+
+    prompt = (
+        "Read this job description and extract the engineering identity it is looking for.\n\n"
+        "Return JSON only with these exact keys:\n"
+        "{\n"
+        '  "engineering_identity": "A short label (5-8 words) for the type of engineer this role wants. E.g. reliability-focused distributed systems engineer",\n'
+        '  "dominant_themes": ["3 to 5 core themes the role cares most about, in order of importance"],\n'
+        '  "arc_description": "1-2 sentences: what a believable candidate arc looks like for this role — what pattern of past work would feel like a natural progression into this job"\n'
+        "}\n\n"
+        "Focus on engineering substance, not soft skills or culture.\n\n"
+        f"JOB DESCRIPTION:\n{jd_text}"
+    )
+
+    try:
+        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", OPENAI_API_KEY), base_url=OPENAI_BASE_URL)
+        response = client.chat.completions.create(
+            model=REWRITE_MODEL,
+            max_tokens=400,
+            temperature=0,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        text = (response.choices[0].message.content or "").strip()
+        payload = _parse_json_content(text)
+        return {
+            "engineering_identity": str(payload.get("engineering_identity", "software engineer")).strip(),
+            "dominant_themes": [str(t).strip() for t in payload.get("dominant_themes", [])],
+            "arc_description": str(payload.get("arc_description", "")).strip(),
+        }
+    except Exception as exc:
+        raise RuntimeError(f"Failed to extract narrative intent: {exc}") from exc
 
 
 def extract_company_role(jd_text: str, dry_run: bool = False) -> dict[str, str]:

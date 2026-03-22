@@ -38,9 +38,10 @@ from playwright.sync_api import sync_playwright
 from pydantic import BaseModel
 
 from pipeline.embedder import embed_keywords, embed_resume
-from pipeline.jd_extractor import extract_company_role, extract_jd_keywords
+from pipeline.jd_extractor import extract_company_role, extract_jd_keywords, extract_jd_narrative_intent
 from pipeline.parser import parse_resume
-from pipeline.rewriter import keyword_driven_rewrite
+from pipeline.rewriter import keyword_driven_rewrite, narrative_driven_rewrite
+from pipeline.narrative_planner import classify_and_plan, generate_narrative_summary
 from pipeline.scorer import compute_keyword_coverage
 from pipeline.pdf_converter import convert_docx_to_pdf
 from pipeline.xml_builder import xml_patch_docx
@@ -248,25 +249,32 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
             detail=f"Original resume not found at {ORIGINAL_RESUME}",
         )
 
-    # 2. Extract JD keywords (25-50 ATS terms)
+    # 2. Extract JD keywords (25-50 ATS terms) + narrative intent
     keywords = extract_jd_keywords(jd_text)
+    narrative_intent = extract_jd_narrative_intent(jd_text)
 
     # 3. Parse resume
     resume_json = parse_resume(ORIGINAL_RESUME)
 
-    # 4. Embed bullets + keywords in parallel (sequential calls, batched)
+    # 4. Embed bullets + keywords (still used for coverage scoring)
     resume_with_emb = embed_resume(resume_json)
     keywords_with_emb = embed_keywords(keywords)
 
     # 5. Keyword coverage BEFORE rewriting
     before_cov = compute_keyword_coverage(resume_json, keywords)
 
-    # 6. Vector-search assign + GPT inject keywords verbatim
-    updated_resume, rewrites, assignment = keyword_driven_rewrite(
-        resume_json, resume_with_emb, keywords_with_emb
-    )
+    # 6. Build narrative plan: classify keywords + assign per-bullet emphasis
+    narrative_plan = classify_and_plan(resume_json, keywords, narrative_intent)
 
-    # 7. Keyword coverage AFTER rewriting
+    # 7. Narrative-driven rewrite: story coherence + natural keyword incorporation
+    updated_resume, rewrites = narrative_driven_rewrite(resume_json, narrative_plan)
+
+    # 8. Inject narrative summary into the resume header
+    summary = generate_narrative_summary(resume_json, narrative_plan)
+    if summary:
+        updated_resume["summary"] = summary
+
+    # 9. Keyword coverage AFTER rewriting
     after_cov = compute_keyword_coverage(updated_resume, keywords)
 
     # 8. Build output DOCX (XML-patch — preserves formatting)
