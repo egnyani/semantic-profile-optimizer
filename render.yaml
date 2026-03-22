@@ -3,5 +3,5 @@ services:
     name: resume-pdf-converter
     runtime: docker
     plan: free
-    dockerfilePath: ./Dockerfile
+    dockerfilePath: ./pdf-service/Dockerfile
     healthCheckPath: /health
