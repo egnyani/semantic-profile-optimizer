@@ -89,14 +89,10 @@ def convert_docx_to_pdf(docx_path: Path) -> Path:
 
     # 1. Upload DOCX as multipart — tell Drive to convert to Google Docs format
     boundary = "ResumeConverterBoundary"
-    folder_id = os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "").strip()
-    file_meta: dict = {
+    metadata = json.dumps({
         "name": docx_path.stem,
         "mimeType": "application/vnd.google-apps.document",
-    }
-    if folder_id:
-        file_meta["parents"] = [folder_id]
-    metadata = json.dumps(file_meta).encode()
+    }).encode()
     docx_bytes = docx_path.read_bytes()
 
     body = (
