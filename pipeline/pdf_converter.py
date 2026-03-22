@@ -18,7 +18,7 @@ from pathlib import Path
 # LibreOffice renders Carlito with ~6.5% tighter vertical line height than
 # Word renders Calibri, causing content to end ~0.6" higher on the page.
 # Scaling all explicit w:line spacing values by this factor compensates.
-_LINE_SCALE = 1.11
+_LINE_SCALE = 1.0  # Scaling now handled server-side in pdf-service/app.py
 
 # Metric-compatible substitutes for Microsoft fonts.
 # Carlito  ≡ Calibri  (same char widths)
