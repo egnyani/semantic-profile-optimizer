@@ -40,7 +40,7 @@ def _get_access_token(sa_info: dict) -> str:
 
     creds = service_account.Credentials.from_service_account_info(
         sa_info,
-        scopes=["https://www.googleapis.com/auth/drive.file"],
+        scopes=["https://www.googleapis.com/auth/drive"],
     )
     creds.refresh(google.auth.transport.requests.Request())
     return creds.token
@@ -53,7 +53,7 @@ def _get_token(sa_info: dict) -> str:
 
     creds = service_account.Credentials.from_service_account_info(
         sa_info,
-        scopes=["https://www.googleapis.com/auth/drive.file"],
+        scopes=["https://www.googleapis.com/auth/drive"],
     )
     creds.refresh(google.auth.transport.requests.Request())
     return creds.token
