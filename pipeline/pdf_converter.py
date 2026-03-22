@@ -66,8 +66,11 @@ def _api(method: str, url: str, token: str, body: bytes | None = None,
     if content_type:
         headers["Content-Type"] = content_type
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
-    with urllib.request.urlopen(req) as resp:
-        return resp.read()
+    try:
+        with urllib.request.urlopen(req) as resp:
+            return resp.read()
+    except urllib.error.HTTPError as e:
+        raise RuntimeError(f"HTTP {e.code} from Google API: {e.read().decode('utf-8', errors='ignore')}")
 
 
 def convert_docx_to_pdf(docx_path: Path) -> Path:
