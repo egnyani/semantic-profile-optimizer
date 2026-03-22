@@ -7,11 +7,18 @@ Set the env var PDF_SERVICE_URL to the Render service URL, e.g.:
 
 from __future__ import annotations
 
+import io
 import os
+import re
 import urllib.request
 import urllib.error
 import zipfile
 from pathlib import Path
+
+# LibreOffice renders Carlito with ~6.5% tighter vertical line height than
+# Word renders Calibri, causing content to end ~0.6" higher on the page.
+# Scaling all explicit w:line spacing values by this factor compensates.
+_LINE_SCALE = 1.065
 
 # Metric-compatible substitutes for Microsoft fonts.
 # Carlito  ≡ Calibri  (same char widths)
@@ -32,9 +39,22 @@ _FONT_XML_FILES = {
 }
 
 
+def _scale_line_spacing(xml: str) -> str:
+    """Scale w:line values in w:spacing elements to compensate for LibreOffice rendering."""
+    def _replace(m: re.Match) -> str:
+        tag = m.group(0)
+        # Don't touch exact line rules — they're already absolute
+        if 'w:lineRule="exact"' in tag:
+            return tag
+        def _scale_val(vm: re.Match) -> str:
+            val = int(vm.group(1))
+            return f'w:line="{int(val * _LINE_SCALE)}"'
+        return re.sub(r'w:line="(\d+)"', _scale_val, tag)
+    return re.sub(r'<w:spacing\b[^/]*/>', _replace, xml)
+
+
 def _patch_fonts(docx_path: Path) -> bytes:
-    """Return the DOCX bytes with all Microsoft fonts swapped for LibreOffice equivalents."""
-    import io
+    """Return the DOCX bytes with fonts swapped and line spacing adjusted for LibreOffice."""
     out_buf = io.BytesIO()
     with zipfile.ZipFile(docx_path, "r") as zin, \
          zipfile.ZipFile(out_buf, "w", zipfile.ZIP_DEFLATED) as zout:
@@ -44,6 +64,8 @@ def _patch_fonts(docx_path: Path) -> bytes:
                 text = data.decode("utf-8")
                 for src, dst in _FONT_MAP.items():
                     text = text.replace(src, dst)
+                if item.filename in ("word/document.xml", "word/styles.xml"):
+                    text = _scale_line_spacing(text)
                 data = text.encode("utf-8")
             zout.writestr(item, data)
     return out_buf.getvalue()
