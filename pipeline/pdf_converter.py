@@ -31,6 +31,7 @@ _FONT_XML_FILES = {
     "word/styles.xml",
     "word/settings.xml",
     "word/theme/theme1.xml",
+    "word/fontTable.xml",
 }
 
 # ── Line-spacing scales to try ─────────────────────────────────────────────
