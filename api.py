@@ -318,7 +318,6 @@ def generate(req: GenerateRequest) -> dict[str, Any]:
 
     return {
         "filename": filename,
-        "pdf_error": pdf_error,
         # Primary metric: keyword coverage
         "keywords_total":   len(keywords),
         "keywords_before":  before_cov["matched"],
