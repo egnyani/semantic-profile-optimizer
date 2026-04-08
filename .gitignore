@@ -19,3 +19,6 @@ __pycache__/
 .DS_Store
 .vercel
 .env*.local
+
+# Build logs (may contain personal info)
+build.log
